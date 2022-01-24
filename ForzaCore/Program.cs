@@ -21,8 +21,9 @@ namespace ForzaCore
         private const int FORZA_DATA_OUT_PORT = 5300;
         private const int FORZA_HOST_PORT = 5200;
         private static Connection connection = new ConnectionBuilder().WithLogging().Build();
-        private static string currentFilename = "./data/" + DateTime.Now.ToFileTime() + ".csv";
-
+        //private static string currentFilename = "./data/" + DateTime.Now.ToFileTime() + ".csv";
+        // setting the filename here doesn't seem wise. 
+        private string currentFilename = "./data/" + DateTime.Now.ToFileTime() + ".csv";
         static void Main(string[] args)
         {
             #region udp stuff
@@ -94,6 +95,7 @@ namespace ForzaCore
 
         static void RecordData(DataPacket data)
         {
+            currentFilename = "./data/" + DateTime.Now.ToFileTime() + ".csv";
             string dataToWrite = DataPacketToCsvString(data);
             const int BufferSize = 65536;  // 64 Kilobytes
             StreamWriter sw = new StreamWriter(currentFilename, true, Encoding.UTF8, BufferSize);
