@@ -14,8 +14,9 @@ namespace ForzaCore
 {
     class Program
     {
-        private const int recordRateMS = 50;
-        private static bool recordingData = false;
+        //private const int recordRateMS = 50;
+        private const int recordRateMS = 25;
+        private static bool recordingData = true;
         private static bool isRaceOn = false;
         private static DataPacket data = new DataPacket();
         private const int FORZA_DATA_OUT_PORT = 5300;
@@ -27,7 +28,8 @@ namespace ForzaCore
         {
             #region udp stuff
             var ipEndPoint = new IPEndPoint(IPAddress.Loopback, FORZA_DATA_OUT_PORT);
-            var senderClient = new UdpClient(FORZA_HOST_PORT);
+            //var senderClient = new UdpClient(FORZA_HOST_PORT);
+            
             var receiverTask = Task.Run(async () =>
             {
                 var client = new UdpClient(FORZA_DATA_OUT_PORT);
@@ -45,12 +47,12 @@ namespace ForzaCore
                         // send data to node here
                         if (resultBuffer.IsRaceOn())
                         {
-                            data = ParseData(resultBuffer);
-                            SendData(data);
+                            //data = ParseData(resultBuffer);
+                            //SendData(data);
                         }
                     });
                 }
-            });
+            }); 
             var recorderTask = Task.Run(async () =>
             {
                 while (true)
@@ -65,11 +67,12 @@ namespace ForzaCore
             #endregion
 
             #region messaging between dotnet and node
-            connection.On<string, string>("message-from-node", msg =>
+            /* connection.On<string, string>("message-from-node", msg =>
             {
                 connection.Send("new-data", $"{msg}");
                 return $"{msg}";
-            });
+            }); 
+            */
             connection.On<string, string>("switch-recording-mode", msg =>
             {
                 if (recordingData)
@@ -83,13 +86,19 @@ namespace ForzaCore
                 return "";
             });
             connection.Listen();
+           
+            
             #endregion
+
         }
 
         static void SendData(DataPacket data)
         {
+            // not referenced anywhere in the file but I'm just going to comment it out anyway
+            /* 
             string dataString = JsonSerializer.Serialize(data);
             connection.Send("new-data", dataString);
+            */
         }
 
         static void RecordData(DataPacket data)
